@@ -1,3 +1,4 @@
+
 from signalTeste import *
 import numpy as np
 import sounddevice as sd
@@ -23,11 +24,28 @@ dictTecla = {
 	"7":[1209,852],
 	"8":[1336,852],
 	"9":[1477,852],
+	"0":[1336,941],
 }
 
-#tecla = input("Tecla: ")
+tecla = input("Tecla: ")
+if tecla == "s":
+	sequencia = input("sequencia?(634554322465433456422)")
+	for i in "18540525,18540525,28540525,28540525,48540525,48540525,18540525,18540525":
+		if i == "," or i == " ":
+			time.sleep(0.25)
+		else:
+			myrecording = sd.play(generateTecla(dictTecla[i],1,0.25),48000)
+			sd.wait()
+			print(myrecording)
+			
+elif tecla == "r":
+	while True:
+		myrecording = sd.rec(int(1 * 48000), samplerate=48000, channels=2)
+		sd.wait()
+		print(sinal.calcFFT(myrecording[0],48000),np.shape(myrecording))
+		sinal.plotFFT(myrecording[0],48000)
 
-for i in "32123332223333212333322321":
-	sd.play(generateTecla(dictTecla[i],1,0.25),48000)
-	sd.stop()
+else:
+	sd.play(generateTecla(dictTecla[tecla],1,0.25),48000)
+	sd.wait()
 

@@ -1,0 +1,6 @@
+numpy
+wave
+peakutils
+sounddevice
+matplotlib
+scipy
