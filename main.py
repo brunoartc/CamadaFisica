@@ -30,7 +30,7 @@ dictTecla = {
 tecla = input("Tecla: ")
 if tecla == "s":
 	sequencia = input("sequencia?(634554322465433456422)")
-	for i in "18540525,18540525,28540525,28540525,48540525,48540525,18540525,18540525":
+	for i in sequencia:
 		if i == "," or i == " ":
 			time.sleep(0.25)
 		else:
@@ -40,12 +40,13 @@ if tecla == "s":
 			
 elif tecla == "r":
 	while True:
-		myrecording = sd.rec(int(1 * 48000), samplerate=48000, channels=2)
+		myrecording = sd.rec(int(1 * 48000), samplerate=48000, channels=1)
 		sd.wait()
-		print(sinal.calcFFT(myrecording[0],48000),np.shape(myrecording))
-		sinal.plotFFT(myrecording[0],48000)
+		print(np.shape(myrecording))
+		sinal.plotFFT(myrecording,48000)
+		
 
 else:
 	sd.play(generateTecla(dictTecla[tecla],1,0.25),48000)
 	sd.wait()
-
+	print(generateTecla(dictTecla[tecla],1,0.25),48000)
