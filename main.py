@@ -10,9 +10,16 @@ import pickle
 
 sinal = signalMeu()
 
-def generateTecla(freq,amp,time):
+def generateTecla(freq,amp,time): #TODO: deixar a funcao mais versatil com valores padroes & colocar samples como variavel (fs)
 	resp = np.add(sinal.generateSin(freq[0],amp,time,48000), sinal.generateSin(freq[1],amp,time,48000))
 	return resp[1]
+
+def getTopFreq(freq,maxdiff):
+	resp = [freq[0]] #TODO: melhorar funcao para nao assumir o primeiro valor e sim o maior valor entre eles, TIP: colocar uma lista temporaria
+	for i in freq:
+		if maxdiff < np.abs(resp[-1] - i):
+			resp.append(i)
+	return resp
 
 dictTecla = {
 	"1":[1209,697],
@@ -39,14 +46,33 @@ if tecla == "s":
 			print(myrecording)
 			
 elif tecla == "r":
+	#plt.axis([0,25000,0,70])
+	#plt.ion()
+	#plt.show()
 	while True:
-		myrecording = sd.rec(int(1 * 48000), samplerate=48000, channels=1)
+		myrecording = sd.rec(int(1 * 48000), samplerate=48000, channels=1) #TODO: fazer uma funcao para esta linha 
 		sd.wait()
-		print(np.shape(myrecording))
-		sinal.plotFFT(myrecording,48000)
+		myrecording = np.ndarray.flatten(myrecording)
+		freq,calcu = sinal.calcFFT(np.ndarray.flatten(myrecording),48000)
+		calcu = np.abs(calcu)
+		freqsort = [x for _, x in sorted(zip(calcu,freq))] # ultimo item é o maior
+		print(getTopFreq(freqsort,2)[-5:-1])
 		
+		#    !!!!!!!!!!!! OLD METHOD, DEPRECIATED !!!!!!!!!!!!!!
+		#sor = np.sort(calcu) !!!!!!!!!!!!old method, depreciated
+		#top100 = freq[np.where(calcu == sor[-1])] #frequencia da onda é o 0 frequencia de acontecimentos 1
+		#print(top100[0],top100[-1],sor[-1],">",sor[-99])
+		#print(getTopFreq(top100,2))
+		#   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! KEEP FOR LOG !!!!!!!
+		sinal.plotFFT(np.ndarray.flatten(myrecording),48000)
+		#print(np.max(myrecording))
+		plt.draw()
+		plt.pause(1) #TODO: achar outro metodo para plotar os graficos
+		#plt.show()
+		plt.close()
 
 else:
 	sd.play(generateTecla(dictTecla[tecla],1,0.25),48000)
 	sd.wait()
 	print(generateTecla(dictTecla[tecla],1,0.25),48000)
+	sinal.plotFFT(generateTecla(dictTecla[tecla],1,0.25),48000)

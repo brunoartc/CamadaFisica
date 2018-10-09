@@ -34,4 +34,4 @@ class signalMeu:
         plt.figure()
         plt.plot(x, np.abs(y))
         plt.title('Fourier')
-        plt.show()
+        #plt.show()
