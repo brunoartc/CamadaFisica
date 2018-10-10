@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import time
 import pickle
 #import peakutils
+import operator
 
 sinal = signalMeu()
 
@@ -34,6 +35,8 @@ dictTecla = {
 	"0":[1336,941],
 }
 
+DTMF = [697, 770, 852, 941, 1209, 1336, 1477, 1633]
+
 tecla = input("Tecla: ")
 if tecla == "s":
 	sequencia = input("sequencia?(634554322465433456422)")
@@ -55,24 +58,52 @@ elif tecla == "r":
 		myrecording = np.ndarray.flatten(myrecording)
 		freq,calcu = sinal.calcFFT(np.ndarray.flatten(myrecording),48000)
 		calcu = np.abs(calcu)
-		freqsort = [x for _, x in sorted(zip(calcu,freq))] # ultimo item é o maior
-		print(getTopFreq(freqsort,2)[-5:-1])
+
+		dictFreq = dict(zip(freq, calcu))
+		freqsOrdenadas = sorted(dictFreq.items(), key=operator.itemgetter(1))  # tuple: ultimo item é o de maior frequencia
+
+		freqOrd = []
+
+		for k in reversed(freqsOrdenadas):
+			freqOrd.append(k)
+
+		freqOrd = freqOrd[0:10]
+
+		listaTeclas = []
+
+		for i in freqOrd:
+			if int(round(i[0])) in DTMF:
+				listaTeclas.append(int(round(i[0])))
+		print(sorted(listaTeclas, reverse=True))
+
+		for digito, freq in dictTecla.items():
+			if freq == listaTeclas:
+				print("Foi pressionada a tecla ", digito)
+
+				sinal.plotFFT(np.ndarray.flatten(myrecording),48000)
+				#print(np.max(myrecording))
+				plt.draw()
+				plt.pause(1) #TODO: achar outro metodo para plotar os graficos
+				#plt.show()
+				plt.close()
+
+		#freqsort = [x for _, x in sorted(zip(calcu,freq))] # ultimo item é o maior
+
+
+		#print("CALCU: ", calcu)
+		#print(getTopFreq(freqsort,2)[-5:-1])
+
 		
+
 		#    !!!!!!!!!!!! OLD METHOD, DEPRECIATED !!!!!!!!!!!!!!
 		#sor = np.sort(calcu) !!!!!!!!!!!!old method, depreciated
 		#top100 = freq[np.where(calcu == sor[-1])] #frequencia da onda é o 0 frequencia de acontecimentos 1
 		#print(top100[0],top100[-1],sor[-1],">",sor[-99])
 		#print(getTopFreq(top100,2))
 		#   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! KEEP FOR LOG !!!!!!!
-		sinal.plotFFT(np.ndarray.flatten(myrecording),48000)
-		#print(np.max(myrecording))
-		plt.draw()
-		plt.pause(1) #TODO: achar outro metodo para plotar os graficos
-		#plt.show()
-		plt.close()
 
 else:
-	sd.play(generateTecla(dictTecla[tecla],1,0.25),48000)
+	sd.play(generateTecla(dictTecla[tecla],1,1),48000)
 	sd.wait()
-	print(generateTecla(dictTecla[tecla],1,0.25),48000)
-	sinal.plotFFT(generateTecla(dictTecla[tecla],1,0.25),48000)
+	print(generateTecla(dictTecla[tecla],1,1),48000)
+	sinal.plotFFT(generateTecla(dictTecla[tecla],1,1),48000)
