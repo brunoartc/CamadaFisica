@@ -13,7 +13,7 @@ sinal = signalMeu()
 
 def generateTecla(freq,amp,time): #TODO: deixar a funcao mais versatil com valores padroes & colocar samples como variavel (fs)
 	resp = np.add(sinal.generateSin(freq[0],amp,time,48000), sinal.generateSin(freq[1],amp,time,48000))
-	return resp[1]
+	return resp
 
 def getTopFreq(freq,maxdiff):
 	resp = [freq[0]] #TODO: melhorar funcao para nao assumir o primeiro valor e sim o maior valor entre eles, TIP: colocar uma lista temporaria
@@ -36,6 +36,8 @@ dictTecla = {
 }
 
 DTMF = [697, 770, 852, 941, 1209, 1336, 1477, 1633]
+pltDelay = 5
+
 
 tecla = input("Tecla: ")
 if tecla == "s":
@@ -70,21 +72,27 @@ elif tecla == "r":
 		freqOrd = freqOrd[0:10]
 
 		listaTeclas = []
-
+		
 		for i in freqOrd:
 			if int(round(i[0])) in DTMF:
 				listaTeclas.append(int(round(i[0])))
 		print(sorted(listaTeclas, reverse=True))
 
 		for digito, freq in dictTecla.items():
-			if freq == listaTeclas:
+			if freq == sorted(listaTeclas, reverse=True):
 				print("Foi pressionada a tecla ", digito)
+				print(" picos=",freqOrd)
 
 				sinal.plotFFT(np.ndarray.flatten(myrecording),48000)
 				#print(np.max(myrecording))
 				plt.draw()
-				plt.pause(1) #TODO: achar outro metodo para plotar os graficos
+				plt.figure('Sinal')
+				plt.plot(np.arange(0,1,1/48000)[:500],myrecording[:500])
+				plt.title("Sine")
+				plt.draw()
+				plt.pause(pltDelay) #TODO: achar outro metodo para plotar os graficos
 				#plt.show()
+				plt.close()
 				plt.close()
 
 		#freqsort = [x for _, x in sorted(zip(calcu,freq))] # ultimo item é o maior
@@ -103,7 +111,11 @@ elif tecla == "r":
 		#   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! KEEP FOR LOG !!!!!!!
 
 else:
-	sd.play(generateTecla(dictTecla[tecla],1,1),48000)
+	sd.play(generateTecla(dictTecla[tecla],1,1)[1],48000)
 	sd.wait()
-	print(generateTecla(dictTecla[tecla],1,1),48000)
-	sinal.plotFFT(generateTecla(dictTecla[tecla],1,1),48000)
+	print(generateTecla(dictTecla[tecla],1,1)[1],48000)
+	#sinal.plotFFT(generateTecla(dictTecla[tecla],1,1),48000)
+	plt.plot(generateTecla(dictTecla[tecla],1,1)[0][:500],generateTecla(dictTecla[tecla],1,1)[1][:500])
+	plt.draw()
+	plt.pause(pltDelay)
+	plt.close()
