@@ -43,14 +43,14 @@ def FIRFilter(yAudioNormalizado, samplerate = 48000, dbb = 60.0, cutoff_hz = 400
 
 tecla = input("Tecla: ")
 if tecla[0] == "s":
-	myrecording = sd.rec(int(tecla[1] * 48000), samplerate=48000, channels=1) #TODO: fazer uma funcao para esta linha
+	myrecording = sd.rec(int(int(tecla[1]) * 48000), samplerate=48000, channels=1) #TODO: fazer uma funcao para esta linha
 	sd.wait()
 	myrecording = np.ndarray.flatten(myrecording)
 
 	myrecording /= np.max(myrecording)
 
 
-	AM=generateAm(10000,myrecording)
+	AM=generateAm(12000,myrecording,48000,int(tecla[1]))
 
 	sd.play(AM,48000)
 	sd.wait()
@@ -66,7 +66,7 @@ elif tecla=="fs":
 	print(final)
 
 
-	sd.play(final,fs)
+	sd.play(AM,fs)
 	sd.wait()
 
 elif tecla[0] == "r":
