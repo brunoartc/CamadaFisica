@@ -8,6 +8,8 @@ import time
 import pickle
 #import peakutils
 import operator
+import soundfile as sf
+import scipy.signal as signal
 
 sinal = signalMeu()
 
@@ -16,8 +18,8 @@ def generateTecla(freq,amp,time): #TODO: deixar a funcao mais versatil com valor
 	return resp
 
 
-def generateAm(freq,rec): #TODO: deixar a funcao mais versatil com valores padroes & colocar samples como variavel (fs)
-	resp = np.multiply(sinal.generateSin(freq,1,2,48000)[1], rec)
+def generateAm(freq,rec,fs=48000,t=2): #TODO: deixar a funcao mais versatil com valores padroes & colocar samples como variavel (fs)
+	resp = np.multiply(sinal.generateSin(freq,1,t,fs)[1], rec)
 	return resp
 
 def getTopFreq(freq,maxdiff):
@@ -29,18 +31,19 @@ def getTopFreq(freq,maxdiff):
 
 
 
-def FIRFilter(samplerate = 48000, dbb = 60.0, cutoff_hz = 4000.0):
+def FIRFilter(yAudioNormalizado, samplerate = 48000, dbb = 60.0, cutoff_hz = 4000.0):
 	nyq_rate = samplerate/2
 	width = 5.0/nyq_rate
 	ripple_db = dbb #dB
 	N , beta = signal.kaiserord(ripple_db, width)
 	taps = signal.firwin(N, cutoff_hz/nyq_rate, window=('kaiser', beta))
 	yFiltrado = signal.lfilter(taps, 1.0, yAudioNormalizado)
+	return yFiltrado
 
 
 tecla = input("Tecla: ")
-if tecla == "s":
-	myrecording = sd.rec(int(2 * 48000), samplerate=48000, channels=1) #TODO: fazer uma funcao para esta linha
+if tecla[0] == "s":
+	myrecording = sd.rec(int(tecla[1] * 48000), samplerate=48000, channels=1) #TODO: fazer uma funcao para esta linha
 	sd.wait()
 	myrecording = np.ndarray.flatten(myrecording)
 
@@ -52,16 +55,32 @@ if tecla == "s":
 	sd.play(AM,48000)
 	sd.wait()
 
+elif tecla=="fs":
+	data, fs = sf.read("senda.ogg", dtype='float32')
+	fs=48000
+	data /= np.max(data) #normalizando o vetor do audio do arquivo
+	time = len(data)/fs
+	AM=generateAm(12000,data,fs,time)
+	AMClean=generateAm(12000,AM,fs,time)
+	final = FIRFilter(AMClean,fs,60,12000)
+	print(final)
+
+
+	sd.play(final,fs)
+	sd.wait()
 
 elif tecla == "r":
-	myrecording = sd.rec(int(2 * 48000), samplerate=48000, channels=1) #TODO: fazer uma funcao para esta linha
+	fs=48000
+	myrecording = sd.rec(int(tecla[1] * fs), samplerate=fs, channels=1) #TODO: fazer uma funcao para esta linha
 	sd.wait()
 	myrecording = np.ndarray.flatten(myrecording)
 
+	AMClean=generateAm(12000,myrecording,fs,tecla[1])
+	final = FIRFilter(AMClean,fs,60,12000)
+	print(final)
 
-	AM=generateAm(10000,myrecording)
 
-	sd.play(AM,48000)
+	sd.play(final,48000)
 	sd.wait()
 
 		#freqsort = [x for _, x in sorted(zip(calcu,freq))] # ultimo item é o maior

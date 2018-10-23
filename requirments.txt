@@ -4,3 +4,4 @@ peakutils
 sounddevice
 matplotlib
 scipy
+soundfile
