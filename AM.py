@@ -69,19 +69,8 @@ elif tecla=="fs":
 	sd.play(final,fs)
 	sd.wait()
 
-elif tecla == "r":
-	fs=48000
-	myrecording = sd.rec(int(tecla[1] * fs), samplerate=fs, channels=1) #TODO: fazer uma funcao para esta linha
-	sd.wait()
-	myrecording = np.ndarray.flatten(myrecording)
-
-	AMClean=generateAm(12000,myrecording,fs,tecla[1])
-	final = FIRFilter(AMClean,fs,60,12000)
-	print(final)
-
-
-	sd.play(final,48000)
-	sd.wait()
+elif tecla[0] == "r":
+	pass
 
 		#freqsort = [x for _, x in sorted(zip(calcu,freq))] # ultimo item é o maior
 
