@@ -1,18 +1,27 @@
 import socket
-from threading import *
+import sys
 
-serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-host = "127.0.0.1"
-port = 8001
-print (host)
-print (port)
-serversocket.bind((host, port))
+# Create a TCP/IP socket
+sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-serversocket.listen(5)
-print ('server started and listening')
-while 1:
-    clientsocket, address = serversocket.accept()
-    teste = input("Enviar?")
-    if teste == "s":
-        teste = input("Enviar?").encode()
-        clientsocket.send(teste)
+# Connect the socket to the port where the server is listening
+server_address = ('localhost', 8001)
+sock.connect(server_address)
+
+
+teste = input("????").encode()
+
+try:
+    # Send data
+    sock.sendall(teste)
+
+    # Look for the response
+    amount_received = 0
+    amount_expected = len(message)
+
+    while amount_received < amount_expected:
+        data = sock.recv(16)
+        amount_received += len(data)
+
+finally:
+    sock.close()

@@ -524,7 +524,7 @@
     </param>
     <param>
       <key>server</key>
-      <value>False</value>
+      <value>True</value>
     </param>
     <param>
       <key>type</key>

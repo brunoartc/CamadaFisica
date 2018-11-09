@@ -3,7 +3,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Top Block
-# Generated: Wed Nov  7 16:31:46 2018
+# Generated: Fri Nov  9 16:55:43 2018
 ##################################################
 
 from distutils.version import StrictVersion
@@ -197,7 +197,7 @@ class top_block(gr.top_block, Qt.QWidget):
         	itemsize=gr.sizeof_char*1,
         	addr='127.0.0.1',
         	port=8001,
-        	server=False,
+        	server=True,
         )
         self.blks2_packet_encoder_0 = grc_blks2.packet_mod_b(grc_blks2.packet_encoder(
         		samples_per_symbol=1,
